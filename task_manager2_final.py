@@ -1,10 +1,11 @@
-#=====importing libraries===========
+# =====importing libraries===========
 '''This is the section where you will import libraries'''
 
-#Compulsory Task 2:
+# Compulsory Task 2:
 
 import datetime
-#https://www.w3schools.com/python/python_datetime.asp
+# https://www.w3schools.com/python/python_datetime.asp
+
 
 def format_current_time():
     '''
@@ -16,26 +17,34 @@ def format_current_time():
     now : str
     '''
 
-    # now = datetime.now() 
+    # now = datetime.now()
     # Very funny / annoying bug :-)
-    #https://stackoverflow.com/questions/19480028/attributeerror-datetime-module-has-no-attribute-strptime
-    now = datetime.datetime.now() 
+    # https://stackoverflow.com/questions/19480028/attributeerror-datetime-module-has-no-attribute-strptime
+    now = datetime.datetime.now()
     format_now = now.strftime("%d %b %Y")
 
     return format_now
 
+
 def check_format_time(date_str):
     '''
     Checks if date_str is in the form DD / Month / YYYY
+
+    Parameter:
+    date_str : str
+
+    Output:
+    Bool 
     '''
 
     try:
         datetime.datetime.strptime(date_str, "%d %b %Y")
-        print('Valid Date Format')
+        return True
 
     except ValueError:
-        print('Nonstandard Date Format')
- 
+        return False
+
+
 def user_dict():
     '''
     Reads user.txt and save name and password as a dictionary
@@ -48,16 +57,17 @@ def user_dict():
 
     output = {}
 
-    with open('user.txt', 'r+', encoding = 'utf-8') as user:
+    with open('user.txt', 'r+', encoding='utf-8') as user:
         for line in user:
 
-            name = line.split(", ")[0]      # Removes comma from the end 
+            name = line.split(", ")[0]      # Removes comma from the end
             password = line.split()[1]
             output[name] = password
 
-    return(output)  
+    return (output)
 
-def login(user_name,pw):
+
+def login(user_name, pw):
     '''
     Returns bool depending if user_name and pw is stored in user_dict()
 
@@ -72,22 +82,24 @@ def login(user_name,pw):
     if user_name in user.keys() and pw in user.values():
         print("Successful login")
         return True
-    
+
     elif user_name in user.keys() and pw not in user.values():
         print("Unsuccessful login: invalid password")
         return False
-    
+
     elif user_name not in user.keys():
         print("Unsuccessful login: invalid user_name")
         return False
-    
+
+
 def print_tasks(line):
     '''
     Prints the line of string from the tasks.txt in a nice format:
     Name, Title, Description, Due Date, Current Date, Task Completion
     '''
     try:
-        name, title, description, due_date, date_assigned, task_completion = line.split(", ") 
+        name, title, description, due_date, date_assigned, task_completion = line.split(
+            ", ")
 
         print("################################")
         print("Name: ", name)
@@ -96,9 +108,10 @@ def print_tasks(line):
         print("Due Date: ", due_date)
         print("Date Assigned: ", date_assigned)
         print("Task Completion: ", task_completion)
-    
+
     except ValueError:
         print("Bad Formatting: Erroneous Comma Usage")
+
 
 def count(file_name):
     '''
@@ -112,11 +125,12 @@ def count(file_name):
     '''
 
     count = 0
-    with open(file_name, 'r+', encoding ='utf-8') as f: 
+    with open(file_name, 'r+', encoding='utf-8') as f:
         for line in f:
             count += 1
 
     return count
+
 
 def task_menu(user_name):
     '''
@@ -164,12 +178,12 @@ def task_menu(user_name):
 
                 with open('user.txt', 'a') as user:
                     user.write(req_name + ", " + req_pw + "\n")
-                
+
                 print("Password Confirmed")
-                
-            else: 
+
+            else:
                 print("Registeration failed: password not confirmed")
-        
+
         else:
             print("Registeration failed: must be admin")
 
@@ -177,52 +191,56 @@ def task_menu(user_name):
         print("\n")
 
     elif menu == 'a':
-        name = input("Please enter the username of person the task is assigned to: ")
+        name = input(
+            "Please enter the username of person the task is assigned to: ")
         title = input("Please enter the title of the task: ")
         description = input("Please enter the description of the task: ")
-        due_date = input("Please enter the due date for the task: ")
-        check_format_time(due_date)
-        # Should be formatted e.g. 10 Oct 2019 
-        # Nonstandard date format will give error message 
-        # but will still be stored 
-        current_date = format_current_time()  
-        # Formatted 13 Aug 2023 
-        task_completion = "No" 
+        current_date = format_current_time()
+        task_completion = "No"
+        due_date = input("""Please enter the due date for the task:
+                         Formatted - DD/Mon/YYYY e.g. 13 Aug 2023""")
 
-        task = [name, title, description, due_date, current_date, task_completion]
-        task_line = ", ".join(task) + "\n" #Task must go to new line 
+        if check_format_time(due_date) == True and name in user.keys():
 
-        if name in user.keys():
+            task = [name, title, description, due_date,
+                    current_date, task_completion]
+            task_line = ", ".join(task) + "\n"  # Task must go to new line
             with open('tasks.txt', 'a') as tasks:
                 tasks.write(task_line)
 
-        else:
+        elif check_format_time(due_date) == False:
+            print("Date Invalid Format: Must be of form DD/Mon/YYYY ")
+
+        elif name not in user.keys():
             print("Error: Entered username is not registered yet")
             print("Please register the user first")
+
+        else:
+            pass
 
         print("Ending a")
         print("\n")
 
     elif menu == 'va':
-        with open('tasks.txt', 'r+', encoding ='utf-8') as tasks: 
+        with open('tasks.txt', 'r+', encoding='utf-8') as tasks:
             for line in tasks:
                 print_tasks(line)
-   
+
         print("Ending va")
         print("\n")
-                
+
     elif menu == 'vm':
 
-        with open('tasks.txt', 'r+', encoding ='utf-8') as tasks: 
+        with open('tasks.txt', 'r+', encoding='utf-8') as tasks:
             for line in tasks:
                 name = line.split(", ")[0]
 
                 if user_name == name:
                     print_tasks(line)
-  
+
                 else:
                     pass
-        
+
         print("Ending vm")
         print("\n")
 
@@ -245,6 +263,7 @@ def task_menu(user_name):
         print("You have entered an invalid input. Please try again")
         print("\n")
 
+
 def task_manager():
     '''
     Gets user_name and pw and checks if you can login
@@ -253,14 +272,15 @@ def task_manager():
 
     user_name = input("Please give me your login username: ")
     pw = input("Please give me your login password: ")
-    login_bool = login(user_name , pw)
+    login_bool = login(user_name, pw)
 
     while login_bool == True:
         task_menu(user_name)
-    
+
+
 #######################################
 task_manager()
 
-#NOTE: very easy to add in code. Is this sign of good prior code? 
-# What is a good way to compare code and update code? 
+# NOTE: very easy to add in code. Is this sign of good prior code?
+# What is a good way to compare code and update code?
 # https://www.textcompare.org/python/
