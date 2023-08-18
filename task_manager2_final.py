@@ -113,6 +113,54 @@ def print_tasks(line):
         print("Bad Formatting: Erroneous Comma Usage")
 
 
+def check_comma_error(str):
+    '''
+    Checks for commas in the input string
+    If there is, then it will cause issue in tm_add()
+    '''
+
+    if ", " in str:
+        return False
+
+    else:
+        return True
+
+
+def display_error(Errors):
+
+    name_err, format_err, name_comma_err, title_comma_err, desc_comma_err = Errors
+
+    print("\n")
+    print("Printing Errors: ")
+
+    if name_err == False:
+        print("Error: Entered username is not registered yet")
+        print("Please register the user first")
+        print("\n")
+
+    if format_err == False:
+        print("Error: Date Invalid Format: Must be of form DD/Mon/YYYY ")
+        print("\n")
+
+    if name_comma_err == False:
+        print("Error: Commas detected in Name")
+        print("Please remove the comma")
+        print("\n")
+
+    if title_comma_err == False:
+        print("Error: Commas detected in Title")
+        print("Please remove the comma")
+        print("\n")
+
+    if desc_comma_err == False:
+        print("Error: Commas detected in Description")
+        print("Please remove the comma")
+        print("\n")
+
+    print("Finished printing Errors")
+    print("\n")
+
+
 def count(file_name):
     '''
     Counts the number of lines in a file 
@@ -177,7 +225,7 @@ def task_menu(user_name):
             elif req_name not in user.keys() and req_pw == confirm_pw:
 
                 with open('user.txt', 'a') as user:
-                    user.write(req_name + ", " + req_pw + "\n")
+                    user.write("\n" + req_name + ", " + req_pw)
 
                 print("Password Confirmed")
 
@@ -191,6 +239,7 @@ def task_menu(user_name):
         print("\n")
 
     elif menu == 'a':
+
         name = input(
             "Please enter the username of person the task is assigned to: ")
         title = input("Please enter the title of the task: ")
@@ -198,25 +247,26 @@ def task_menu(user_name):
         current_date = format_current_time()
         task_completion = "No"
         due_date = input("""Please enter the due date for the task:
-                         Formatted - DD/Mon/YYYY e.g. 13 Aug 2023""")
+        Formatted - DD/Mon/YYYY e.g. 13 Aug 2023  """)
 
-        if check_format_time(due_date) == True and name in user.keys():
+        Errors = [name in user.keys(),
+                  check_format_time(due_date),
+                  check_comma_error(name),
+                  check_comma_error(title),
+                  check_comma_error(description)
+                  ]
 
+        if all(Errors) == True:
             task = [name, title, description, due_date,
                     current_date, task_completion]
-            task_line = ", ".join(task) + "\n"  # Task must go to new line
+
+            task_line = "\n" + ", ".join(task)  # Task must go to new line
+
             with open('tasks.txt', 'a') as tasks:
                 tasks.write(task_line)
 
-        elif check_format_time(due_date) == False:
-            print("Date Invalid Format: Must be of form DD/Mon/YYYY ")
-
-        elif name not in user.keys():
-            print("Error: Entered username is not registered yet")
-            print("Please register the user first")
-
         else:
-            pass
+            display_error(Errors)
 
         print("Ending a")
         print("\n")
